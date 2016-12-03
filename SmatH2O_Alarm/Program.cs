@@ -262,6 +262,7 @@ namespace SmatH2O_Alarm
             year.InnerText = parsedDate[5];
             XmlElement hour = alarmString.CreateElement("hour");
             hour.InnerText = parsedDate[0];
+
             XmlElement minute = alarmString.CreateElement("minute");
             minute.InnerText = parsedDate[1];
             XmlElement second = alarmString.CreateElement("second");
