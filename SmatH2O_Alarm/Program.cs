@@ -114,7 +114,12 @@ namespace SmatH2O_Alarm
             float alarmMinVal = float.Parse(minValue, CultureInfo.InvariantCulture.NumberFormat);
             float alarmMaxVal = float.Parse(maxValue, CultureInfo.InvariantCulture.NumberFormat);
 
-            if (alarmMinVal > currentVal && currentVal > alarmMaxVal)
+
+            Console.WriteLine(currentVal);
+            Console.WriteLine(alarmMaxVal);
+            Console.WriteLine(alarmMinVal);
+
+            if (currentVal < alarmMinVal || currentVal > alarmMaxVal)
             {
                 alarmTriggerBetween(currentValue, minValue, maxValue, sensorType, sensorId);
             }
@@ -250,7 +255,7 @@ namespace SmatH2O_Alarm
             date.AppendChild(week);
             alarm.AppendChild(date);
 
-
+            alarm.AppendChild(value);
             alarm.AppendChild(alarmDescription);
             alarm.AppendChild(date);
 
