@@ -155,14 +155,10 @@ namespace SmatH2O_Alarm
 
             XmlDocument alarmString = new XmlDocument();
 
-            DateTime dat = DateTime.Now;
+            DateTime currentDate = DateTime.Now;
             DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
             Calendar cal = dfi.Calendar;
-            int weekNumber = cal.GetWeekOfYear(dat, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
-
-            String d = dat.ToString("HH;mm;ss;dd;MM;yyyy");
-
-            String[] parsedDate = d.Split(';');
+            int weekNumber = cal.GetWeekOfYear(currentDate, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
 
             XmlElement alarm = alarmString.CreateElement("alarm");
             alarm.SetAttribute("parameterType", sensorType);
@@ -170,42 +166,26 @@ namespace SmatH2O_Alarm
 
             XmlElement value = alarmString.CreateElement("value");
             value.InnerText = currentValue;
-
             XmlElement alarmDescription = alarmString.CreateElement("alarmDescription");
-            alarmDescription.InnerText = operation;
+            alarmDescription.InnerText = "Cause: " + operation + " ALARMVALUE: " + alarmValue;
 
             XmlElement date = alarmString.CreateElement("date");
             XmlElement day = alarmString.CreateElement("day");
-            day.InnerText = parsedDate[3];
+            day.InnerText = currentDate.Day.ToString();
             XmlElement month = alarmString.CreateElement("month");
-            month.InnerText = parsedDate[4];
+            month.InnerText = currentDate.Month.ToString();
             XmlElement year = alarmString.CreateElement("year");
-            year.InnerText = parsedDate[5];
+            year.InnerText = currentDate.Year.ToString();
             XmlElement hour = alarmString.CreateElement("hour");
-            hour.InnerText = parsedDate[0];
+            hour.InnerText = currentDate.Hour.ToString();
             XmlElement minute = alarmString.CreateElement("minute");
-            minute.InnerText = parsedDate[1];
+            minute.InnerText = currentDate.Minute.ToString();
             XmlElement second = alarmString.CreateElement("second");
-            second.InnerText = parsedDate[2];
+            second.InnerText = currentDate.Second.ToString();
             XmlElement week = alarmString.CreateElement("week");
             week.InnerText = weekNumber.ToString();
 
             alarm.AppendChild(value);
-
-            if (operation == "GREATERTHAN")
-            {
-                XmlElement maxLimit = alarmString.CreateElement("maxLimit");
-                maxLimit.InnerText = alarmValue;
-                alarm.AppendChild(maxLimit);
-            }
-            else if (operation == "LESSTHAN")
-            {
-                XmlElement minLimit = alarmString.CreateElement("minLimit");
-                minLimit.InnerText = alarmValue;
-                alarm.AppendChild(minLimit);
-            }
-
-
             alarm.AppendChild(alarmDescription);
 
             date.AppendChild(day);
@@ -241,13 +221,8 @@ namespace SmatH2O_Alarm
             XmlElement value = alarmString.CreateElement("value");
             value.InnerText = currentValue;
 
-            XmlElement maxLimit = alarmString.CreateElement("maxLimit");
-            maxLimit.InnerText = maxValue;
-            XmlElement minLimit = alarmString.CreateElement("minLimit");
-            minLimit.InnerText = minValue;
-
             XmlElement alarmDescription = alarmString.CreateElement("alarmDescription");
-            alarmDescription.InnerText = "BETWEEN";
+            alarmDescription.InnerText = "Cause: BETWEEN " + "MINVALUE: " + minValue + " MAXVALUE: " + maxValue;
 
             XmlElement date = alarmString.CreateElement("date");
             XmlElement day = alarmString.CreateElement("day");
