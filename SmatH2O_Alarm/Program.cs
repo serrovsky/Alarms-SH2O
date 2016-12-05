@@ -115,10 +115,6 @@ namespace SmatH2O_Alarm
             float alarmMaxVal = float.Parse(maxValue, CultureInfo.InvariantCulture.NumberFormat);
 
 
-            Console.WriteLine(currentVal);
-            Console.WriteLine(alarmMaxVal);
-            Console.WriteLine(alarmMinVal);
-
             if (currentVal < alarmMinVal || currentVal > alarmMaxVal)
             {
                 alarmTriggerBetween(currentValue, minValue, maxValue, sensorType, sensorId);
@@ -310,9 +306,6 @@ namespace SmatH2O_Alarm
             {
                 Console.WriteLine(alarmMessage);
                 m_cClient.Publish(m_strTopicsInfo[1], Encoding.UTF8.GetBytes(alarmMessage));
-                XmlDocument alarm = new XmlDocument();
-                alarm.LoadXml(alarmMessage);
-                alarm.Save("@alarm.xml");
             }
         }
 
