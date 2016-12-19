@@ -228,7 +228,7 @@ namespace SmatH2O_Alarm
             XmlElement value = alarmString.CreateElement("value");
             value.InnerText = currentValue;
             XmlElement alarmDescription = alarmString.CreateElement("alarmDescription");
-            alarmDescription.InnerText = "Cause: " + operation + " ALARMVALUE: " + alarmValue;
+            alarmDescription.InnerText = operation + " ALARMVALUE: " + alarmValue;
 
             XmlElement date = alarmString.CreateElement("date");
             XmlElement day = alarmString.CreateElement("day");
@@ -283,7 +283,7 @@ namespace SmatH2O_Alarm
             value.InnerText = currentValue;
 
             XmlElement alarmDescription = alarmString.CreateElement("alarmDescription");
-            alarmDescription.InnerText = "Cause: BETWEEN " + "MINVALUE: " + minValue + " MAXVALUE: " + maxValue;
+            alarmDescription.InnerText = "BETWEEN " + "MINVALUE: " + minValue + " MAXVALUE: " + maxValue;
 
             XmlElement date = alarmString.CreateElement("date");
             XmlElement day = alarmString.CreateElement("day");
