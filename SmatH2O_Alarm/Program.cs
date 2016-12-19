@@ -19,8 +19,11 @@ namespace SmatH2O_Alarm
         static XmlDocument alarmRules;
 
         static String ipAddress = ConfigurationSettings.AppSettings["ipAddressMessagingChannel"];
+        static String topicDataSensors = ConfigurationSettings.AppSettings["topicDataSensors"];
+        static String topicAlarms = ConfigurationSettings.AppSettings["topicAlarms"];
+
         static MqttClient m_cClient = new MqttClient(ipAddress);
-        static string[] m_strTopicsInfo = { "dataSensors", "alarms" };
+        static string[] m_strTopicsInfo = { topicDataSensors, topicAlarms };
 
         static int Main(string[] args)
         {
