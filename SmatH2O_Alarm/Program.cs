@@ -19,23 +19,38 @@ namespace SmatH2O_Alarm
         static XmlDocument alarmRules;
 
         static String ipAddress = ConfigurationSettings.AppSettings["ipAddressMessagingChannel"];
-        static MqttClient m_cClient = new MqttClient("127.0.0.1");
+        static MqttClient m_cClient = new MqttClient(ipAddress);
         static string[] m_strTopicsInfo = { "dataSensors", "alarms" };
 
         static int Main(string[] args)
         {
             alarmRules = new XmlDocument();
-            alarmRules.Load(@"triggerRules.xml");
+
+            try
+            {
+                alarmRules.Load(@"triggerRules.xml");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                abrutCloseWithoutConnection();
+            }
 
             if (!validateXml(alarmRules))
             {
                 Console.WriteLine("ALARM RULES XML WITH BAD CONFIGURATION");
-                return 1;
+                abrutCloseWithoutConnection();
             }
 
             connectToMessagingChannel();
 
             return 0;
+        }
+
+        private static void abrutCloseWithoutConnection()
+        {
+            Console.ReadKey();
+            Environment.Exit(-1);
         }
 
         private static void connectToMessagingChannel()
@@ -45,7 +60,7 @@ namespace SmatH2O_Alarm
             if (!m_cClient.IsConnected)
             {
                 Console.WriteLine("Error connecting to message broker...");
-                return;
+                abrutCloseWithoutConnection();
             }
 
             m_cClient.MqttMsgPublishReceived += client_MqttMsgPublishReceived;
@@ -58,95 +73,140 @@ namespace SmatH2O_Alarm
 
         static void client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
         {
-            String strTemp = Encoding.UTF8.GetString(e.Message);
-
-            if (e.Topic == "dataSensors")
+            try
             {
-                analiseDataSensor(strTemp);
+                String strTemp = Encoding.UTF8.GetString(e.Message);
+
+                if (e.Topic == "dataSensors")
+                {
+                    analiseDataSensor(strTemp);
+                }
+            }
+            catch (Exception f)
+            {
+                Console.WriteLine(f.Message);
+                abrutCloseWithConnection();
             }
         }
 
         private static void analiseDataSensor(string strTemp)
         {
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(strTemp);
-
-            XmlNode sensorType = doc.SelectSingleNode("signal/@parameterType");
-            XmlNode sensorId = doc.SelectSingleNode("signal/@parameterId");
-            XmlNode currentValue = doc.SelectSingleNode("signal/value");
-
-            XmlNode alarm = alarmRules.SelectSingleNode("alarmRules/" + sensorType.InnerText);
-
-            if (alarm.Attributes["alarmStatus"].Value == "ON")
+            try
             {
-                XmlNodeList sensorRules = alarmRules.SelectNodes("alarmRules/" + sensorType.InnerText + "/rule[@ruleStatus='" + "ON" + "']");
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(strTemp);
 
-                foreach (XmlNode x in sensorRules)
+                XmlNode sensorType = doc.SelectSingleNode("signal/@parameterType");
+                XmlNode sensorId = doc.SelectSingleNode("signal/@parameterId");
+                XmlNode currentValue = doc.SelectSingleNode("signal/value");
+
+                XmlNode alarm = alarmRules.SelectSingleNode("alarmRules/" + sensorType.InnerText);
+
+                if (alarm.Attributes["alarmStatus"].Value == "ON")
                 {
+                    XmlNodeList sensorRules = alarmRules.SelectNodes("alarmRules/" + sensorType.InnerText + "/rule[@ruleStatus='" + "ON" + "']");
 
-                    string condition = x.Attributes["condition"].Value;
-                    XmlNode alarmValue = x.SelectSingleNode("value");
-
-                    switch (condition)
+                    foreach (XmlNode x in sensorRules)
                     {
-                        case "GREATERTHAN":
-                            checkValue("GREATERTHAN", currentValue.InnerText, alarmValue.InnerText, sensorType.InnerText, sensorId.InnerText);
-                            break;
-                        case "LESSTHAN":
-                            checkValue("LESSTHAN", currentValue.InnerText, alarmValue.InnerText, sensorType.InnerText, sensorId.InnerText);
-                            break;
-                        case "EQUALS":
-                            checkValue("EQUALS", currentValue.InnerText, alarmValue.InnerText, sensorType.InnerText, sensorId.InnerText);
-                            break;
-                        case "BETWEEN":
-                            XmlNode alarmMinValue = x.SelectSingleNode("minValue");
-                            XmlNode alarmMaxValue = x.SelectSingleNode("maxValue");
-                            checkValueBetween(currentValue.InnerText, alarmMinValue.InnerText, alarmMaxValue.InnerText, sensorType.InnerText, sensorId.InnerText);
-                            break;
+
+                        string condition = x.Attributes["condition"].Value;
+                        XmlNode alarmValue = x.SelectSingleNode("value");
+
+                        switch (condition)
+                        {
+                            case "GREATERTHAN":
+                                checkValue("GREATERTHAN", currentValue.InnerText, alarmValue.InnerText, sensorType.InnerText, sensorId.InnerText);
+                                break;
+                            case "LESSTHAN":
+                                checkValue("LESSTHAN", currentValue.InnerText, alarmValue.InnerText, sensorType.InnerText, sensorId.InnerText);
+                                break;
+                            case "EQUALS":
+                                checkValue("EQUALS", currentValue.InnerText, alarmValue.InnerText, sensorType.InnerText, sensorId.InnerText);
+                                break;
+                            case "BETWEEN":
+                                XmlNode alarmMinValue = x.SelectSingleNode("minValue");
+                                XmlNode alarmMaxValue = x.SelectSingleNode("maxValue");
+                                checkValueBetween(currentValue.InnerText, alarmMinValue.InnerText, alarmMaxValue.InnerText, sensorType.InnerText, sensorId.InnerText);
+                                break;
+                        }
                     }
                 }
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                abrutCloseWithConnection();
+            }
+        }
+
+        private static void abrutCloseWithConnection()
+        {
+            if (m_cClient.IsConnected)
+            {
+                m_cClient.Unsubscribe(m_strTopicsInfo);
+                m_cClient.Disconnect();
+            }
+
+            Console.ReadKey();
+
+            Environment.Exit(-1);
         }
 
         private static void checkValueBetween(string currentValue, string minValue, string maxValue, string sensorType, string sensorId)
         {
-            float currentVal = float.Parse(currentValue, CultureInfo.InvariantCulture.NumberFormat);
-            float alarmMinVal = float.Parse(minValue, CultureInfo.InvariantCulture.NumberFormat);
-            float alarmMaxVal = float.Parse(maxValue, CultureInfo.InvariantCulture.NumberFormat);
-
-
-            if (currentVal < alarmMinVal || currentVal > alarmMaxVal)
+            try
             {
-                alarmTriggerBetween(currentValue, minValue, maxValue, sensorType, sensorId);
+                float currentVal = float.Parse(currentValue, CultureInfo.InvariantCulture.NumberFormat);
+                float alarmMinVal = float.Parse(minValue, CultureInfo.InvariantCulture.NumberFormat);
+                float alarmMaxVal = float.Parse(maxValue, CultureInfo.InvariantCulture.NumberFormat);
+
+
+                if (currentVal < alarmMinVal || currentVal > alarmMaxVal)
+                {
+                    alarmTriggerBetween(currentValue, minValue, maxValue, sensorType, sensorId);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                abrutCloseWithConnection();
             }
         }
 
 
         private static void checkValue(string operation, string currentValue, string alarmValue, string sensorType, string sensorId)
         {
-            float currentVal = float.Parse(currentValue, CultureInfo.InvariantCulture.NumberFormat);
-            float alarmVal = float.Parse(alarmValue, CultureInfo.InvariantCulture.NumberFormat);
-
-            switch (operation)
+            try
             {
-                case "EQUALS":
-                    if (currentVal == alarmVal)
-                    {
-                        alarmtrigger(operation, currentValue, alarmValue, sensorType, sensorId);
-                    }
-                    break;
-                case "GREATERTHAN":
-                    if (currentVal > alarmVal)
-                    {
-                        alarmtrigger(operation, currentValue, alarmValue, sensorType, sensorId);
-                    }
-                    break;
-                case "LESSTHAN":
-                    if (currentVal < alarmVal)
-                    {
-                        alarmtrigger(operation, currentValue, alarmValue, sensorType, sensorId);
-                    }
-                    break;
+                float currentVal = float.Parse(currentValue, CultureInfo.InvariantCulture.NumberFormat);
+                float alarmVal = float.Parse(alarmValue, CultureInfo.InvariantCulture.NumberFormat);
+
+                switch (operation)
+                {
+                    case "EQUALS":
+                        if (currentVal == alarmVal)
+                        {
+                            alarmtrigger(operation, currentValue, alarmValue, sensorType, sensorId);
+                        }
+                        break;
+                    case "GREATERTHAN":
+                        if (currentVal > alarmVal)
+                        {
+                            alarmtrigger(operation, currentValue, alarmValue, sensorType, sensorId);
+                        }
+                        break;
+                    case "LESSTHAN":
+                        if (currentVal < alarmVal)
+                        {
+                            alarmtrigger(operation, currentValue, alarmValue, sensorType, sensorId);
+                        }
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                abrutCloseWithConnection();
             }
         }
 
@@ -312,7 +372,16 @@ namespace SmatH2O_Alarm
 
         private static bool validateXml(XmlDocument alarmRules)
         {
-            alarmRules.Schemas.Add(null, @"triggerRules.xsd");
+            try
+            {
+                alarmRules.Schemas.Add(null, @"triggerRules.xsd");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                abrutCloseWithoutConnection();
+            }
+
             ValidationEventHandler handler = new ValidationEventHandler(MyValidationMethod);
 
             alarmRules.Validate(handler);
