@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<alarmRules>
+  <PH alarmStatus = "ON">
+	<rule ruleStatus = "ON" condition = "LESSTHAN">
+		<value>10</value>
+	</rule>
+	<rule ruleStatus = "ON" condition = "EQUALS">
+		<value>4</value>
+	</rule>
+	<rule ruleStatus = "ON" condition = "GREATERTHAN">
+		<value>2</value>
+	</rule>
+	<rule ruleStatus = "ON" condition = "BETWEEN">
+		<minValue>25</minValue>
+		<maxValue>79</maxValue>
+	</rule>
+  </PH>
+  <NH3 alarmStatus = "OFF">
+	<rule ruleStatus = "OFF" condition = "LESSTHAN">
+		<value>1</value>
+	</rule>
+	<rule ruleStatus = "OFF" condition = "EQUALS">
+		<value>4</value>
+	</rule>
+	<rule ruleStatus = "OFF" condition = "GREATERTHAN">
+		<value>10</value>
+	</rule>
+	<rule ruleStatus = "OFF" condition = "BETWEEN">
+		<minValue>6</minValue>
+		<maxValue>10</maxValue>
+	</rule>
+  </NH3>
+  <CI2 alarmStatus = "ON">
+	<rule ruleStatus = "OFF" condition = "LESSTHAN">
+		<value>1</value>
+	</rule>
+	<rule ruleStatus = "ON" condition = "EQUALS">
+		<value>4</value>
+	</rule>
+	<rule ruleStatus = "ON" condition = "GREATERTHAN">
+		<value>10</value>
+	</rule>
+	<rule ruleStatus = "OFF" condition = "BETWEEN">
+		<minValue>6</minValue>
+		<maxValue>10</maxValue>
+	</rule>
+  </CI2>
+</alarmRules>
