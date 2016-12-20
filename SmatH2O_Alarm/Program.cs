@@ -41,7 +41,7 @@ namespace SmatH2O_Alarm
                 abrutCloseWithoutConnection();
             }
 
-            if (!validateXml(alarmRules))
+            if (!validateXml(alarmRules, @"triggerRules.xsd"))
             {
                 Console.WriteLine("ALARM RULES XML WITH BAD CONFIGURATION");
                 abrutCloseWithoutConnection();
@@ -100,6 +100,12 @@ namespace SmatH2O_Alarm
             {
                 XmlDocument doc = new XmlDocument();
                 doc.LoadXml(strTemp);
+
+                if (!validateXml(doc, @"triggerRules.xsd"))
+                {
+                    Console.WriteLine("ALARM RULES XML WITH BAD CONFIGURATION");
+                    abrutCloseWithConnection();
+                }
 
                 XmlNode sensorType = doc.SelectSingleNode("signal/@parameterType");
                 XmlNode sensorId = doc.SelectSingleNode("signal/@parameterId");
@@ -375,11 +381,11 @@ namespace SmatH2O_Alarm
         }
 
 
-        private static bool validateXml(XmlDocument alarmRules)
+        private static bool validateXml(XmlDocument alarmRules, String xsdDocument)
         {
             try
             {
-                alarmRules.Schemas.Add(null, @"triggerRules.xsd");
+                alarmRules.Schemas.Add(null, xsdDocument);
             }
             catch (Exception e)
             {
