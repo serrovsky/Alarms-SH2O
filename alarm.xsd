@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="alarm">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="value" type="xs:decimal"/>
+        <xs:element name="maxLimit" type="xs:int" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="minLimit" type="xs:int" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="alarmDescription" type="xs:string"/>
+        <xs:element name="date" type="dateType"/>
+      </xs:sequence>
+      <xs:attribute name="parameterType" type="paramType" use="required"/>
+      <xs:attribute name="parameterId" type="xs:integer" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="dateType">
+    <xs:sequence>
+      <xs:element name="day" type="dayType" />
+      <xs:element name="month" type="monthType"/>
+      <xs:element name="year" type="xs:gYear"/>
+      <xs:element name="hour" type="hourType"/>
+      <xs:element name="minute" type="minutesType"/>
+      <xs:element name="second" type="secondsType"/>
+      <xs:element name="week" type="weekType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="dayType">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="1"/>
+      <xs:maxInclusive value="31"/>
+      <xs:totalDigits value="2"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="monthType">
+    <xs:restriction base="xs:decimal">
+      <xs:minInclusive value="1"/>
+      <xs:maxInclusive value="12"/>
+      <xs:totalDigits value="2"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="hourType">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="23"/>
+      <xs:totalDigits value="2"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="minutesType">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="59"/>
+      <xs:totalDigits value="2"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="secondsType">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="00"/>
+      <xs:maxInclusive value="59"/>
+      <xs:totalDigits value="2"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="weekType">
+    <xs:restriction base="xs:decimal">
+      <xs:minInclusive value="1"/>
+      <xs:maxInclusive value="52"/>
+      <xs:totalDigits value="2"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="paramType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="PH" />
+      <xs:enumeration value="NH3" />
+      <xs:enumeration value="CI2" />
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>
