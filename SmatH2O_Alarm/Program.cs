@@ -23,6 +23,7 @@ namespace SmatH2O_Alarm
         static String topicAlarms = ConfigurationSettings.AppSettings["topicAlarms"];
         static String xsdSignalPath = ConfigurationSettings.AppSettings["schemaSignalPath"];
         static String xsdTriggerRulesPath = ConfigurationSettings.AppSettings["schemaTriggerRulesPath"];
+        static String xmlTriggerRulesPath = ConfigurationSettings.AppSettings["xmlTriggerRulesPath"];
 
         static MqttClient m_cClient = new MqttClient(ipAddress);
         static string[] m_strTopicsInfo = { topicDataSensors, topicAlarms };
@@ -33,15 +34,15 @@ namespace SmatH2O_Alarm
 
             try
             {
-                alarmRules.Load(@xsdTriggerRulesPath);
+                alarmRules.Load(@xmlTriggerRulesPath);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message + " 1");
                 abrutCloseWithoutConnection();
             }
 
-            if (!validateXml(alarmRules, @"triggerRules.xsd"))
+            if (!validateXml(alarmRules, @xsdTriggerRulesPath))
             {
                 Console.WriteLine("ALARM RULES XML WITH BAD CONFIGURATION");
                 abrutCloseWithoutConnection();
@@ -89,7 +90,7 @@ namespace SmatH2O_Alarm
             }
             catch (Exception f)
             {
-                Console.WriteLine(f.Message);
+                Console.WriteLine(f.Message + " 2");
                 abrutCloseWithConnection();
             }
         }
@@ -99,13 +100,8 @@ namespace SmatH2O_Alarm
             try
             {
                 XmlDocument doc = new XmlDocument();
-                doc.LoadXml(strTemp);
 
-                if (!validateXml(doc, @"triggerRules.xsd"))
-                {
-                    Console.WriteLine("ALARM RULES XML WITH BAD CONFIGURATION");
-                    abrutCloseWithConnection();
-                }
+                doc.LoadXml(strTemp);
 
                 XmlNode sensorType = doc.SelectSingleNode("signal/@parameterType");
                 XmlNode sensorId = doc.SelectSingleNode("signal/@parameterId");
@@ -179,7 +175,7 @@ namespace SmatH2O_Alarm
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message + " 3");
                 abrutCloseWithConnection();
             }
         }
@@ -216,7 +212,7 @@ namespace SmatH2O_Alarm
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message + " 4");
                 abrutCloseWithConnection();
             }
         }
@@ -332,44 +328,6 @@ namespace SmatH2O_Alarm
 
         }
 
-        /*private static XmlElement createDateXML()
-        {
-            DateTime dat = DateTime.Now;
-            DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
-            Calendar cal = dfi.Calendar;
-            int weekNumber = cal.GetWeekOfYear(dat, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
-
-            String d = dat.ToString("HH;mm;ss;dd;MM;yyyy");
-
-            String[] parsedDate = d.Split(';');
-            XmlElement date = new XmlElement("date");
-            XmlElement date = alarmString.CreateElement("date");
-            XmlElement day = alarmString.CreateElement("day");
-            day.InnerText = parsedDate[3];
-            XmlElement month = alarmString.CreateElement("month");
-            month.InnerText = parsedDate[4];
-            XmlElement year = alarmString.CreateElement("year");
-            year.InnerText = parsedDate[5];
-            XmlElement hour = alarmString.CreateElement("hour");
-            hour.InnerText = parsedDate[0];
-            XmlElement minute = alarmString.CreateElement("minute");
-            minute.InnerText = parsedDate[1];
-            XmlElement second = alarmString.CreateElement("second");
-            second.InnerText = parsedDate[2];
-            XmlElement week = alarmString.CreateElement("week");
-            week.InnerText = weekNumber.ToString();
-
-            date.AppendChild(day);
-            date.AppendChild(month);
-            date.AppendChild(year);
-            date.AppendChild(hour);
-            date.AppendChild(minute);
-            date.AppendChild(second);
-            date.AppendChild(week);
-
-            return date;
-
-        }*/
 
         private static void sendAlarmToMessaging(string alarmMessage)
         {
@@ -389,7 +347,7 @@ namespace SmatH2O_Alarm
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message + " 5");
                 abrutCloseWithoutConnection();
             }
 

@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="alarmRules">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="PH" type="paramType"/>
+        <xs:element name="NH3" type="paramType"/>
+        <xs:element name="CI2" type="paramType"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="paramType">
+    <xs:sequence>
+      <xs:element name="rule" type="ruleType" maxOccurs="50"/>
+    </xs:sequence>
+    <xs:attribute name="alarmStatus" type="statusType"/>
+  </xs:complexType>
+
+  <xs:complexType name="ruleType">
+    <xs:all>
+      <xs:element name="value" type="valueType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="minValue" type="valueType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="maxValue" type="valueType" minOccurs="0" maxOccurs="1"/>
+    </xs:all>
+    <xs:attribute name="ruleStatus" type="statusType"/>
+    <xs:attribute name="condition" type="conditionType"/>
+  </xs:complexType>
+
+  <xs:simpleType name="statusType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ON"/>
+      <xs:enumeration value="OFF"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="conditionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="LESSTHAN"/>
+      <xs:enumeration value="EQUALS"/>
+      <xs:enumeration value="GREATERTHAN"/>
+      <xs:enumeration value="BETWEEN"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="valueType">
+    <xs:restriction base="xs:decimal">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="100"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>
