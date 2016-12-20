@@ -21,7 +21,7 @@ namespace SmatH2O_Alarm
         static String ipAddress = ConfigurationSettings.AppSettings["ipAddressMessagingChannel"];
         static String topicDataSensors = ConfigurationSettings.AppSettings["topicDataSensors"];
         static String topicAlarms = ConfigurationSettings.AppSettings["topicAlarms"];
-        static String xsdAlarmPath = ConfigurationSettings.AppSettings["schemaAlarmPath"];
+        static String xsdSignalPath = ConfigurationSettings.AppSettings["schemaSignalPath"];
         static String xsdTriggerRulesPath = ConfigurationSettings.AppSettings["schemaTriggerRulesPath"];
 
         static MqttClient m_cClient = new MqttClient(ipAddress);

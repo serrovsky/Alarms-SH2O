@@ -1,13 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-
-  <xs:element name="alarm">
+  
+  <xs:element name="signal">
     <xs:complexType>
       <xs:sequence>
         <xs:element name="value" type="xs:decimal"/>
-        <xs:element name="maxLimit" type="xs:int" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="minLimit" type="xs:int" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="alarmDescription" type="xs:string"/>
         <xs:element name="date" type="dateType"/>
       </xs:sequence>
       <xs:attribute name="parameterType" type="paramType" use="required"/>
@@ -74,7 +71,7 @@
       <xs:totalDigits value="2"/>
     </xs:restriction>
   </xs:simpleType>
-
+  
   <xs:simpleType name="paramType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="PH" />
@@ -82,5 +79,5 @@
       <xs:enumeration value="CI2" />
     </xs:restriction>
   </xs:simpleType>
-
+  
 </xs:schema>

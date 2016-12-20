@@ -7,7 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmatH2O_Alarm", "SmatH2O_Al
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B5CA4D6C-3BF9-4BA2-BB0E-CF03AD7E7902}"
 	ProjectSection(SolutionItems) = preProject
-		alarm.xsd = alarm.xsd
 		SmatH2O_Alarm\bin\Debug\triggerRules.xml = SmatH2O_Alarm\bin\Debug\triggerRules.xml
 		SmatH2O_Alarm\bin\Debug\triggerRules.xsd = SmatH2O_Alarm\bin\Debug\triggerRules.xsd
 	EndProjectSection
