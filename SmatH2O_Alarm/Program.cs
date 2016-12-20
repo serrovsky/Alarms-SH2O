@@ -21,6 +21,8 @@ namespace SmatH2O_Alarm
         static String ipAddress = ConfigurationSettings.AppSettings["ipAddressMessagingChannel"];
         static String topicDataSensors = ConfigurationSettings.AppSettings["topicDataSensors"];
         static String topicAlarms = ConfigurationSettings.AppSettings["topicAlarms"];
+        static String xsdAlarmPath = ConfigurationSettings.AppSettings["schemaAlarmPath"];
+        static String xsdTriggerRulesPath = ConfigurationSettings.AppSettings["schemaTriggerRulesPath"];
 
         static MqttClient m_cClient = new MqttClient(ipAddress);
         static string[] m_strTopicsInfo = { topicDataSensors, topicAlarms };
@@ -31,7 +33,7 @@ namespace SmatH2O_Alarm
 
             try
             {
-                alarmRules.Load(@"triggerRules.xml");
+                alarmRules.Load(@xsdTriggerRulesPath);
             }
             catch (Exception e)
             {
