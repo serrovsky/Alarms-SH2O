@@ -61,6 +61,7 @@ namespace SmatH2O_Alarm
 
         private static void connectToMessagingChannel()
         {
+            //TODO Handle excepetion
             m_cClient.Connect(Guid.NewGuid().ToString());
 
             if (!m_cClient.IsConnected)
