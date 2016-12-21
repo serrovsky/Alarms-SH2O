@@ -30,15 +30,14 @@ namespace SmatH2O_Alarm
 
         static int Main(string[] args)
         {
-            alarmRules = new XmlDocument();
-
             try
             {
+                alarmRules = new XmlDocument();
                 alarmRules.Load(@xmlTriggerRulesPath);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message + " 1");
+                Console.WriteLine(e.Message);
                 abrutCloseWithoutConnection();
             }
 
@@ -61,19 +60,28 @@ namespace SmatH2O_Alarm
 
         private static void connectToMessagingChannel()
         {
-            m_cClient.Connect(Guid.NewGuid().ToString());
 
-            if (!m_cClient.IsConnected)
+            try
             {
-                Console.WriteLine("Error connecting to message broker...");
-                abrutCloseWithoutConnection();
+                m_cClient.Connect(Guid.NewGuid().ToString());
+
+                if (!m_cClient.IsConnected)
+                {
+                    Console.WriteLine("Error connecting to message broker...");
+                    abrutCloseWithoutConnection();
+                }
+
+                m_cClient.MqttMsgPublishReceived += client_MqttMsgPublishReceived;
+
+                byte[] qosLevels = { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE };//QoS
+
+                m_cClient.Subscribe(m_strTopicsInfo, qosLevels);
             }
-
-            m_cClient.MqttMsgPublishReceived += client_MqttMsgPublishReceived;
-
-            byte[] qosLevels = { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE };//QoS
-
-            m_cClient.Subscribe(m_strTopicsInfo, qosLevels);
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                abrutCloseWithConnection();
+            }
         }
 
 
@@ -90,7 +98,7 @@ namespace SmatH2O_Alarm
             }
             catch (Exception f)
             {
-                Console.WriteLine(f.Message + " 2");
+                Console.WriteLine(f.Message);
                 abrutCloseWithConnection();
             }
         }
@@ -102,6 +110,13 @@ namespace SmatH2O_Alarm
                 XmlDocument doc = new XmlDocument();
 
                 doc.LoadXml(strTemp);
+
+                if (!validateXml(doc, @xsdSignalPath))
+                {
+                    Console.WriteLine("SIGNALS XML STUCTURE WITH BAD CONFIGURATION");
+                    abrutCloseWithConnection();
+                }
+
 
                 XmlNode sensorType = doc.SelectSingleNode("signal/@parameterType");
                 XmlNode sensorId = doc.SelectSingleNode("signal/@parameterId");
@@ -175,7 +190,7 @@ namespace SmatH2O_Alarm
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message + " 3");
+                Console.WriteLine(e.Message);
                 abrutCloseWithConnection();
             }
         }
@@ -212,7 +227,7 @@ namespace SmatH2O_Alarm
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message + " 4");
+                Console.WriteLine(e.Message);
                 abrutCloseWithConnection();
             }
         }
@@ -347,7 +362,7 @@ namespace SmatH2O_Alarm
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message + " 5");
+                Console.WriteLine(e.Message);
                 abrutCloseWithoutConnection();
             }
 
